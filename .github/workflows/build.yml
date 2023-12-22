@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os:
-          - fedora39
+          - fedora38
           - opensuse15
           - rocky9
           - ubuntu2204
@@ -19,8 +19,8 @@ jobs:
         salt_version:
           - "3006.5"
         include:
-          - os: fedora39
-            src: generic/fedora39
+          - os: fedora38
+            src: bento/fedora-38
             pkg: dnf
           - os: opensuse15
             src: generic/opensuse15
