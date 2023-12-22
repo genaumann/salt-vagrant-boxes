@@ -1,0 +1,71 @@
+---
+name: Packer Build
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os:
+          - fedora39
+          - opensuse15
+          - rocky9
+          - ubuntu2204
+          - debian12
+        salt_version:
+          - "3006.5"
+        include:
+          - os: fedora39
+            src: generic/fedora39
+            pkg: dnf
+          - os: opensuse15
+            src: generic/opensuse15
+            pkg: zypper
+          - os: rocky9
+            src: generic/rocky9
+            pkg: dnf
+          - os: ubuntu2204
+            src: ubuntu/jammy64
+            pkg: apt
+          - os: debian12
+            src: debian/bookworm64
+            pkg: apt
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup HashiCorp Packer
+        uses: hashicorp/setup-packer@v2.0.1
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install vagrant and virtualbox
+        uses: ConorMacBride/install-package@v1
+        with:
+          apt: vagrant virtualbox
+      - name: Run Packer init
+        run: packer init .
+      - name: Run Packer Validate
+        run: |
+          packer validate -var "salt_version=${{ matrix.salt_version }}" \
+            -var "src=${{ matrix.src }}" -var "os_short=${{ matrix.os }}" \
+            -var "pkg_mgr=${{ matrix.pkg }}" .
+        env:
+          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+      - name: Install python request
+        run: pip3 install requests
+      - name: Run vagrant API script
+        run: python3 api.py ${{ matrix.os }} ${{ matrix.salt_version }}
+        env:
+          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+      - name: Run Packer Build
+        run: |
+          packer build -var "salt_version=${{ matrix.salt_version }}" \
+            -var "src=${{ matrix.src }}" -var "os_short=${{ matrix.os }}" \
+            -var "pkg_mgr=${{ matrix.pkg }}" .
+        env:
+          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
