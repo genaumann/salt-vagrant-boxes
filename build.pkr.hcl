@@ -1,6 +1,6 @@
 locals {
   pre_install  = var.pkg_mgr == "apt" ? "sudo apt-get update" : ""
-  curl_install = var.pkg_mgr == "apt" ? "sudo apt-get install curl -y" : var.pkg_mgr == "dnf" ? "sudo dnf install curl -y" : var.pkg_mgr == "zypper" ? "sudo zypper -n install curl" : ""
+  curl_install = var.pkg_mgr == "apt" ? "sudo apt-get install curl -y" : var.pkg_mgr == "dnf" ? "sudo dnf install curl -y" : var.pkg_mgr == "zypper" ? "sudo zypper -n install curl git-core" : ""
 }
 
 build {
