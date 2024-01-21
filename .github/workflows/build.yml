@@ -24,6 +24,7 @@ jobs:
             pkg: dnf
           - os: opensuse15
             src: generic/opensuse15
+            salt_version: "3006.0" # see https://software.opensuse.org/package/salt-master
             pkg: zypper
           - os: rocky9
             src: generic/rocky9
