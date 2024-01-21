@@ -12,7 +12,6 @@ jobs:
       matrix:
         os:
           - fedora38
-          - opensuse15
           - rocky9
           - ubuntu2204
           - debian12
