@@ -19,6 +19,7 @@ jobs:
           - "3006.5"
           - "3006.6"
           - "3006.7"
+          - "3007.0"
         include:
           - os: fedora38
             src: bento/fedora-38
