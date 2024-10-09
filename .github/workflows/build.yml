@@ -58,19 +58,20 @@ jobs:
         run: |
           packer validate -var "salt_version=${{ matrix.salt_version }}" \
             -var "src=${{ matrix.src }}" -var "os_short=${{ matrix.os }}" \
-            -var "pkg_mgr=${{ matrix.pkg }}" .
-        env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+            -var "pkg_mgr=${{ matrix.pkg }}" \
+            -var "vagrant_cloud_client_id=${{ secrets.HCP_CLIENT_ID }}" \
+            -var "vagrant_cloud_client_secret=${{ secrets.HCP_CLIENT_SECRET }}" .
       - name: Install python request
         run: pip3 install requests
       - name: Run vagrant API script
         run: python3 api.py ${{ matrix.os }} ${{ matrix.salt_version }}
         env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
       - name: Run Packer Build
         run: |
           packer build -var "salt_version=${{ matrix.salt_version }}" \
             -var "src=${{ matrix.src }}" -var "os_short=${{ matrix.os }}" \
-            -var "pkg_mgr=${{ matrix.pkg }}" .
-        env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+            -var "pkg_mgr=${{ matrix.pkg }}" \
+            -var "vagrant_cloud_client_id=${{ secrets.HCP_CLIENT_ID }}" \
+            -var "vagrant_cloud_client_secret=${{ secrets.HCP_CLIENT_SECRET }}" .
