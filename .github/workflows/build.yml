@@ -11,9 +11,10 @@ jobs:
     strategy:
       matrix:
         os:
-          - fedora38
+          - fedora40
           - rocky9
           - ubuntu2204
+          - ubuntu2404
           - debian12
         salt_version:
           - "3006.5"
@@ -23,8 +24,8 @@ jobs:
           - "3007.0"
           - "3007.1"
         include:
-          - os: fedora38
-            src: bento/fedora-38
+          - os: fedora40
+            src: bento/fedora-40
             pkg: dnf
           - os: opensuse15
             src: generic/opensuse15
@@ -35,6 +36,9 @@ jobs:
             pkg: dnf
           - os: ubuntu2204
             src: ubuntu/jammy64
+            pkg: apt
+          - os: ubuntu2404
+            src: bento/ubuntu-24.04
             pkg: apt
           - os: debian12
             src: debian/bookworm64
