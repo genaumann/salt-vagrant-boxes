@@ -15,11 +15,13 @@ build {
     ]
   }
 
-  post-processor "vagrant-cloud" {
+  post-processor "vagrant-registry" {
     architecture        = "amd64"
     box_tag             = "genaumann/${var.os_short}-salt"
     version             = "${var.salt_version}"
     version_description = "${var.os_short} testing image for Salt Formulas"
     keep_input_artifact = false
+    client_id           = var.vagrant_cloud_client_id
+    client_secret       = var.vagrant_cloud_client_secret
   }
 }

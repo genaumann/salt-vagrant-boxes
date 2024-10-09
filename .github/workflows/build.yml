@@ -11,33 +11,33 @@ jobs:
     strategy:
       matrix:
         os:
-          - fedora38
+          - fedora40
           - rocky9
           - ubuntu2204
+          - ubuntu2404
           - debian12
         salt_version:
-          - "3006.5"
-          - "3006.6"
-          - "3006.7"
           - "3006.9"
-          - "3007.0"
           - "3007.1"
         include:
-          - os: fedora38
-            src: bento/fedora-38
+          - os: fedora40
+            src: bento/fedora-40
             pkg: dnf
           - os: opensuse15
-            src: generic/opensuse15
+            src: bento/opensuse-leap-15
             salt_version: "3006.0" # see https://software.opensuse.org/package/salt-master
             pkg: zypper
           - os: rocky9
-            src: generic/rocky9
+            src: bento/rockylinux-9
             pkg: dnf
           - os: ubuntu2204
-            src: ubuntu/jammy64
+            src: bento/ubuntu-22.04
+            pkg: apt
+          - os: ubuntu2404
+            src: bento/ubuntu-24.04
             pkg: apt
           - os: debian12
-            src: debian/bookworm64
+            src: bento/debian-12
             pkg: apt
     steps:
       - name: Checkout Repository
@@ -58,19 +58,20 @@ jobs:
         run: |
           packer validate -var "salt_version=${{ matrix.salt_version }}" \
             -var "src=${{ matrix.src }}" -var "os_short=${{ matrix.os }}" \
-            -var "pkg_mgr=${{ matrix.pkg }}" .
-        env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+            -var "pkg_mgr=${{ matrix.pkg }}" \
+            -var "vagrant_cloud_client_id=${{ secrets.HCP_CLIENT_ID }}" \
+            -var "vagrant_cloud_client_secret=${{ secrets.HCP_CLIENT_SECRET }}" .
       - name: Install python request
         run: pip3 install requests
       - name: Run vagrant API script
         run: python3 api.py ${{ matrix.os }} ${{ matrix.salt_version }}
         env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+          HCP_CLIENT_ID: ${{ secrets.HCP_CLIENT_ID }}
+          HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
       - name: Run Packer Build
         run: |
           packer build -var "salt_version=${{ matrix.salt_version }}" \
             -var "src=${{ matrix.src }}" -var "os_short=${{ matrix.os }}" \
-            -var "pkg_mgr=${{ matrix.pkg }}" .
-        env:
-          VAGRANT_CLOUD_TOKEN: ${{ secrets.VAGRANT_CLOUD_TOKEN }}
+            -var "pkg_mgr=${{ matrix.pkg }}" \
+            -var "vagrant_cloud_client_id=${{ secrets.HCP_CLIENT_ID }}" \
+            -var "vagrant_cloud_client_secret=${{ secrets.HCP_CLIENT_SECRET }}" .
