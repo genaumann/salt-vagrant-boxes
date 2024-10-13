@@ -1,6 +1,6 @@
 locals {
   pre_install  = var.pkg_mgr == "apt" ? "sudo apt-get update" : ""
-  curl_install = var.pkg_mgr == "apt" ? "sudo apt-get install curl -y" : var.pkg_mgr == "dnf" ? "sudo dnf install curl -y" : var.pkg_mgr == "zypper" ? "sudo zypper -n install curl git-core" : ""
+  pkg_install = var.pkg_mgr == "apt" ? "sudo apt-get install curl -y" : var.pkg_mgr == "dnf" ? "sudo dnf install curl -y" : var.pkg_mgr == "zypper" ? "sudo zypper -n install curl git-core python3-pip" : ""
 }
 
 build {
@@ -9,10 +9,10 @@ build {
   provisioner "shell" {
     inline = [
       local.pre_install,
-      local.curl_install,
+      local.pkg_install,
       "curl -o /tmp/bootstrap-salt.sh -L https://bootstrap.saltproject.io",
       "sudo sh /tmp/bootstrap-salt.sh -X -p git stable ${var.salt_version}",
-      "sudo salt-call --local pip.install requests==2.31.0" // docker error on requests > 2.31.0 - see https://github.com/geerlingguy/ansible-role-docker/issues/462
+      "sudo salt-call --local pip.install 'requests<=2.31.0'" // docker error on requests > 2.31.0 - see https://github.com/geerlingguy/ansible-role-docker/issues/462
     ]
   }
 
