@@ -11,7 +11,8 @@ build {
       local.pre_install,
       local.curl_install,
       "curl -o /tmp/bootstrap-salt.sh -L https://bootstrap.saltproject.io",
-      "sudo sh /tmp/bootstrap-salt.sh -X -p git stable ${var.salt_version}"
+      "sudo sh /tmp/bootstrap-salt.sh -X -p git stable ${var.salt_version}",
+      "sudo salt-call --local pip.install requests==2.31.0" // docker error on requests > 2.31.0 - see https://github.com/geerlingguy/ansible-role-docker/issues/462
     ]
   }
 
